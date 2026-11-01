@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'">
-<title>이미지 아틀라스</title><meta name="description" content="이미지를 탐색하고, 생성 조건과 결과를 나란히 비교하는 이미지 아틀라스입니다."><meta property="og:title" content="이미지 아틀라스"><meta property="og:description" content="이미지를 탐색하고 생성 조건과 결과를 비교해 보세요."><link rel="stylesheet" href="assets/style.css">
+<title>이미지 아틀라스</title><meta name="description" content="이미지를 탐색하고, 생성 조건과 결과를 나란히 비교하는 이미지 아틀라스입니다."><meta property="og:title" content="이미지 아틀라스"><meta property="og:description" content="이미지를 탐색하고 생성 조건과 결과를 비교해 보세요."><link rel="stylesheet" href="assets/style.css?v=9a9c28f4671c3250">
 </head>
 <body>
 <header><a class="brand" href="./">이미지 아틀라스 <span>IMAGE ATLAS</span></a><span id="mode" class="mode"></span></header>
 <main>
-<section class="intro"><div><h1 id="page-title">이미지 탐색</h1><p id="page-description">이미지를 둘러보고 검색하거나 조건으로 좁혀 보세요.</p></div><div class="view-switch" aria-label="보기 방식"><button id="appreciate" aria-pressed="true">이미지 탐색</button><button id="benchmark" aria-pressed="false">모델 비교</button><button id="prompt-view" aria-pressed="false" hidden>프롬프트 비교</button></div></section>
+<section class="intro"><div><h1 id="page-title">이미지 탐색</h1><p id="page-description">이미지를 둘러보고 검색하거나 조건으로 좁혀 보세요.</p></div><div class="view-switch" aria-label="보기 방식"><button id="appreciate" aria-pressed="true">이미지 탐색</button><button id="all-view" aria-pressed="false">전체 이미지</button><button id="benchmark" aria-pressed="false">비교</button><button id="prompt-view" aria-pressed="false" hidden>프롬프트 비교</button></div></section>
+<section id="explore-panel" class="explore-panel" aria-label="의미 기준 탐색"><div class="explore-head"><label>분류 기준<select id="axis"><option value="subject">대상</option><option value="place">장소</option><option value="activity">활동</option><option value="style">표현</option></select></label><button id="tree-toggle" class="quiet" aria-expanded="false">분류 열기</button><nav id="breadcrumbs" aria-label="현재 분류"></nav></div><div class="explore-body"><nav id="semantic-tree" aria-label="분류"></nav><div id="explore-summary"></div></div><button id="to-all" class="quiet">전체 이미지 보기</button></section>
 <section id="benchmark-guide" class="benchmark-guide" hidden aria-labelledby="benchmark-title">
 <div class="benchmark-heading"><div><p class="eyebrow">모델 벤치마크</p><h2 id="benchmark-title">같은 장면으로 모델 비교</h2><p id="benchmark-introduction">같은 장면의 이미지를 골라 나란히 살펴보세요.</p></div><div class="bench-counts" id="bench-counts"></div></div>
 <p class="bench-how"><strong>읽는 법</strong> 장면을 고르고 → 모델별 결과를 비교하고 → 조건과 확대 이미지를 확인하세요. 미리보기는 전달을 위해 재인코딩되었으며 원본 크기와 다를 수 있습니다.</p>
@@ -17,28 +18,38 @@
 <details class="bench-method"><summary>방법과 한계</summary><div id="bench-method-content"></div><p>같은 프롬프트와 시드도 모델별 토크나이저·기본 설정·정밀도·해상도 차이를 없애지 않으므로 통제 실험이나 성능 순위가 아닙니다. 이 표본과 미리보기만으로 모델 전체를 일반화하지 마세요.</p></details>
 </section>
 <section id="prompt-view-panel" class="prompt-view-panel" hidden aria-label="동일 프롬프트 카탈로그 비교">
-<div class="prompt-controls"><label>실제 프롬프트<select id="prompt-choice"></select></label><label>시드<select id="prompt-seed"></select></label><label>비교 범위<select id="prompt-scope"><option value="all">전체 카탈로그 + 튜닝</option><option value="catalog">카탈로그 기본/변형</option><option value="tuning">튜닝 전후</option></select></label></div>
-<p id="prompt-summary" class="prompt-summary" role="status"></p><div class="prompt-manual"><span id="prompt-manual-count">수동 비교 선택 0 / 4</span><button id="prompt-manual-compare" disabled>선택한 2–4장 비교</button><button id="prompt-clear-selection" class="quiet">선택 해제</button></div><div id="prompt-results" class="prompt-results"></div>
-<section id="prompt-reference" class="prompt-reference" hidden aria-label="목표·참고 이미지"></section>
+<div class="prompt-controls"><label>비교 장면<select id="prompt-choice"></select></label><label>시드<select id="prompt-seed"></select></label><label>비교 보기<select id="prompt-scope"><option value="all">카탈로그 한눈비교</option><option value="tuning">튜닝 전후</option></select></label></div>
+<p id="prompt-summary" class="prompt-summary" role="status"></p><section id="prompt-reference" class="prompt-reference" hidden aria-label="목표 원본과 재현"></section><div class="prompt-manual" hidden><span id="prompt-manual-count">수동 비교 선택 0 / 4</span><button id="prompt-manual-compare" disabled>선택한 2–4장 비교</button><button id="prompt-clear-selection" class="quiet">선택 해제</button></div><div id="prompt-results" class="prompt-results"></div>
 </section>
 <section class="tools" aria-label="이미지 검색과 필터">
 <label class="search"><span aria-hidden="true">⌕</span><input type="search" id="q" aria-label="이미지 검색" placeholder="제목, 모델, 프롬프트, 태그 검색" autocomplete="off"><kbd>/</kbd></label>
 <div class="filter-heading"><button id="filter-toggle" class="quiet" aria-expanded="false" aria-controls="advanced-filters">상세 필터 열기</button><button id="search-all" class="quiet" hidden>전체 이미지에서 찾기</button><button id="reset" class="text-button">초기화</button></div>
+<p class="filter-hint">한 필터에서 여러 항목을 고를 수 있습니다. 선택한 조건은 ×로 해제하세요.</p>
 <div id="active-filters" class="active-filters" aria-label="적용 중인 조건"></div>
 <div id="filters" class="filters">
+<label data-facet="subject">대상<select id="subject"><option value="">모든 대상</option></select></label>
 <label data-facet="source">출처<select id="source"><option value="">모든 출처</option></select></label>
 <label data-facet="job">세트<select id="job"><option value="">모든 세트</option></select></label>
 <label data-facet="model">모델<select id="model"><option value="">모든 모델</option></select></label>
 <label data-facet="catalog">카탈로그<select id="catalog"><option value="">모든 카탈로그</option></select></label>
 <label data-facet="scene">장면<select id="scene"><option value="">모든 장면</option></select></label>
-<div id="advanced-filters" class="advanced-filters"><label data-facet="occupation">직업<select id="occupation"><option value="">모든 직업</option></select></label>
+<div id="advanced-filters" class="advanced-filters"><label data-facet="place">장소<select id="place"><option value="">모두</option></select></label>
+<label data-facet="activity">활동<select id="activity"><option value="">모두</option></select></label>
+<label data-facet="style">표현<select id="style"><option value="">모두</option></select></label>
+<label data-facet="author">작성자<select id="author"><option value="">모두</option></select></label>
+<label data-facet="aspect">화면 비율<select id="aspect"><option value="">모두</option></select></label>
+<label data-facet="prompt_info">프롬프트 정보<select id="prompt_info"><option value="">모두</option></select></label>
+<label data-facet="model_info">모델 정보<select id="model_info"><option value="">모두</option></select></label>
+<label data-facet="occupation">직업<select id="occupation"><option value="">모든 직업</option></select></label>
 <label data-facet="category">카테고리<select id="category"><option value="">모든 카테고리</option></select></label>
 <label data-facet="level">이미지 유형<select id="level"><option value="">모든 유형</option></select></label>
 <label data-facet="rating">평가<select id="rating"><option value="">모든 평가</option></select></label>
+<label data-facet="role">역할<select id="role"><option value="">모든 역할</option></select></label>
 <label data-facet="available">파일<select id="available"><option value="available">사용 가능</option><option value="all">전체 기록</option></select></label></div>
+<details id="date-filter" class="date-filter"><summary>날짜 범위·기준</summary><div class="date-controls"><label>날짜 기준<select id="date-kind"><option value="record">최근 기록</option><option value="generated">생성일</option><option value="collected">수집일</option><option value="source">출처 게시일</option></select></label><label>시작일<input id="date-from" type="date"></label><label>종료일<input id="date-to" type="date"></label><label><input id="include-unknown-date" type="checkbox" checked>날짜 미확인 포함</label></div></details>
 </div>
 </section>
-<div class="summary"><div><span id="count" role="status">컬렉션을 불러오는 중…</span><span id="diag"></span></div><label class="sort-label">정렬 <select id="sort" aria-label="결과 정렬"><option value="recent">최근 날짜 · 미확인 뒤로</option><option value="model">모델 이름</option><option value="rating">평가 높은 순</option></select></label></div>
+<div class="summary"><div><span id="count" role="status">컬렉션을 불러오는 중…</span><span id="diag"></span></div><label class="sort-label">카드 <select id="density" aria-label="카드 정보량"><option value="simple">간단히</option><option value="detailed">자세히</option></select></label><label class="sort-label">정렬 <select id="sort" aria-label="결과 정렬"><option value="recent">최근 기록</option><option value="old">오래된 기록</option><option value="generated_new">생성일 최신</option><option value="generated_old">생성일 오래된 순</option><option value="collected_new">수집일 최신</option><option value="collected_old">수집일 오래된 순</option><option value="source_new">출처 게시일 최신</option><option value="source_old">출처 게시일 오래된 순</option><option value="group_subject">주제별 모아 보기</option><option value="group_model">모델별 모아 보기</option><option value="title">제목순</option><option value="model">모델 이름</option><option value="shuffle">무작위</option></select></label><button id="shuffle-again" class="quiet" hidden>다시 섞기</button></div>
 <section id="grid" class="grid" aria-label="이미지 목록"></section>
 <details id="model-information" class="bench-method" hidden><summary>모델 체크포인트·정밀도 자세히</summary><div id="model-cards" class="model-cards"></div></details>
 <div id="empty" class="empty" hidden><strong>조건에 맞는 이미지가 없습니다.</strong><p>검색어를 줄이거나 필터를 초기화해 보세요.</p><button id="empty-reset" class="quiet">필터 초기화</button></div>
@@ -54,5 +65,5 @@
 <p class="compare-hint">이미지를 선택한 뒤 확대하세요. 확대 후 드래그하거나 스크롤해 이동할 수 있습니다.</p><div id="compare-grid" class="compare-grid"></div><details id="condition-comparison" class="condition-comparison" hidden><summary>조건 비교 펼치기</summary><p>확인된 값의 차이를 표시합니다. 조건의 일치나 공정한 비교를 보증하지 않습니다.</p><div class="condition-scroll"><table id="condition-table"></table></div></details>
 </dialog>
 <footer><span>IMAGE ATLAS</span><span>이미지를 탐색하고 생성 조건과 결과를 비교하세요.</span><span>← → 이미지 이동 · Esc 닫기 · / 검색</span></footer>
-<script src="assets/app.js" defer></script>
+<script src="assets/app.js?v=e17d267aba57ec53" defer></script>
 </body></html>
