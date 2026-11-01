@@ -8,7 +8,7 @@
 <body>
 <header><a class="brand" href="./">이미지 아틀라스 <span>IMAGE ATLAS</span></a><span id="mode" class="mode"></span></header>
 <main>
-<section class="intro"><div><h1 id="page-title">이미지 탐색</h1><p id="page-description">마음에 드는 장면을 찾고, 선택한 이미지를 나란히 살펴보세요.</p></div><div class="view-switch" aria-label="보기 방식"><button id="appreciate" aria-pressed="true">전체 탐색</button><button id="benchmark" aria-pressed="false">모델 벤치마크</button><button id="prompt-view" aria-pressed="false">프롬프트 비교</button></div></section>
+<section class="intro"><div><h1 id="page-title">이미지 탐색</h1><p id="page-description">마음에 드는 장면을 찾고, 선택한 이미지를 나란히 살펴보세요.</p></div><div class="view-switch" aria-label="보기 방식"><button id="appreciate" aria-pressed="true">감상</button><button id="benchmark" aria-pressed="false">벤치</button><button id="prompt-view" aria-pressed="false" hidden>프롬프트 비교</button></div></section>
 <section id="benchmark-guide" class="benchmark-guide" hidden aria-labelledby="benchmark-title">
 <div class="benchmark-heading"><div><p class="eyebrow">모델 벤치마크</p><h2 id="benchmark-title">같은 장면으로 모델 비교</h2><p id="benchmark-introduction">같은 장면의 이미지를 골라 나란히 살펴보세요.</p></div><div class="bench-counts" id="bench-counts"></div></div>
 <p class="bench-how"><strong>읽는 법</strong> 장면을 고르고 → 모델별 결과를 비교하고 → 조건과 확대 이미지를 확인하세요. 미리보기는 전달을 위해 재인코딩되었으며 원본 크기와 다를 수 있습니다.</p>
@@ -18,7 +18,7 @@
 </section>
 <section id="prompt-view-panel" class="prompt-view-panel" hidden aria-label="동일 프롬프트 카탈로그 비교">
 <div class="prompt-controls"><label>실제 프롬프트<select id="prompt-choice"></select></label><label>시드<select id="prompt-seed"></select></label><label>비교 범위<select id="prompt-scope"><option value="all">전체 카탈로그 + 튜닝</option><option value="catalog">카탈로그 기본/변형</option><option value="tuning">튜닝 전후</option></select></label></div>
-<p id="prompt-summary" class="prompt-summary" role="status"></p><div id="prompt-results" class="prompt-results"></div>
+<p id="prompt-summary" class="prompt-summary" role="status"></p><div class="prompt-manual"><span id="prompt-manual-count">수동 비교 선택 0 / 4</span><button id="prompt-manual-compare" disabled>선택한 2–4장 비교</button><button id="prompt-clear-selection" class="quiet">선택 해제</button></div><div id="prompt-results" class="prompt-results"></div>
 </section>
 <section class="tools" aria-label="이미지 검색과 필터">
 <label class="search"><span aria-hidden="true">⌕</span><input type="search" id="q" aria-label="이미지 검색" placeholder="제목, 모델, 프롬프트, 태그 검색" autocomplete="off"><kbd>/</kbd></label>
