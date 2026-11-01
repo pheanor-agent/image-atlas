@@ -25,3 +25,10 @@
 .prompt-assets{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}.prompt-card.prompt-pair{grid-column:span 2}.prompt-pair .prompt-assets{grid-template-columns:repeat(2,minmax(0,1fr))}.prompt-assets>div{min-width:0}.prompt-assets h4{min-height:2.6em;margin:0 0 6px;font-size:12px;line-height:1.3;color:var(--ink)}
 
 .filter-heading #filter-toggle{display:block;min-height:34px;padding:5px 10px;font-size:12px}
+
+/* Content-first card labels: keep long generated titles and model names readable. */
+.card-title{display:-webkit-box;width:100%;min-height:2.9em;overflow:hidden;text-align:left;overflow-wrap:anywhere;white-space:normal;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-height:1.4}
+.cardmeta .sub{display:-webkit-box;overflow:hidden;overflow-wrap:anywhere;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-height:1.4;max-height:2.8em}
+
+/* Compare catalogs within their canonical base-model families. */
+#prompt-results.family-groups{display:block}.prompt-family{margin:24px 0}.prompt-family:first-child{margin-top:0}.prompt-family>h2{font:600 19px/1.4 var(--serif);color:var(--accent);margin:0 0 12px;padding:0 0 8px;border-bottom:1px solid var(--line)}
