@@ -3,18 +3,22 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'">
-<title>이미지 아틀라스 · 탐색과 비교</title><link rel="stylesheet" href="assets/style.css">
+<title>이미지 아틀라스</title><meta name="description" content="이미지를 탐색하고, 생성 조건과 결과를 나란히 비교하는 이미지 아틀라스입니다."><meta property="og:title" content="이미지 아틀라스"><meta property="og:description" content="이미지를 탐색하고 생성 조건과 결과를 비교해 보세요."><link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-<header><a class="brand" href="./">이미지 아틀라스 <span>IMAGE ATLAS</span></a><span id="mode" class="mode">공개 · 검토 완료 SFW</span></header>
+<header><a class="brand" href="./">이미지 아틀라스 <span>IMAGE ATLAS</span></a><span id="mode" class="mode"></span></header>
 <main>
-<section class="intro"><div><h1 id="page-title">이미지 탐색</h1><p id="page-description">마음에 드는 장면을 찾고, 선택한 이미지를 나란히 살펴보세요.</p></div><div class="view-switch" aria-label="보기 방식"><button id="appreciate" aria-pressed="true">감상</button><button id="benchmark" aria-pressed="false">벤치</button></div></section>
+<section class="intro"><div><h1 id="page-title">이미지 탐색</h1><p id="page-description">마음에 드는 장면을 찾고, 선택한 이미지를 나란히 살펴보세요.</p></div><div class="view-switch" aria-label="보기 방식"><button id="appreciate" aria-pressed="true">전체 탐색</button><button id="benchmark" aria-pressed="false">모델 벤치마크</button><button id="prompt-view" aria-pressed="false">프롬프트 비교</button></div></section>
 <section id="benchmark-guide" class="benchmark-guide" hidden aria-labelledby="benchmark-title">
-<div class="benchmark-heading"><div><p class="eyebrow">공개 모델 벤치마크</p><h2 id="benchmark-title">같은 장면으로 모델 비교</h2><p id="benchmark-introduction">같은 장면에 해당하는 공개 이미지를 골라 나란히 살펴보세요.</p></div><div class="bench-counts" id="bench-counts"></div></div>
+<div class="benchmark-heading"><div><p class="eyebrow">모델 벤치마크</p><h2 id="benchmark-title">같은 장면으로 모델 비교</h2><p id="benchmark-introduction">같은 장면의 이미지를 골라 나란히 살펴보세요.</p></div><div class="bench-counts" id="bench-counts"></div></div>
 <p class="bench-how"><strong>읽는 법</strong> 장면을 고르고 → 모델별 결과를 비교하고 → 조건과 확대 이미지를 확인하세요. 미리보기는 전달을 위해 재인코딩되었으며 원본 크기와 다를 수 있습니다.</p>
 <div class="benchmark-controls"><label>테스트 세트<select id="bench-suite"><option value="">세트 선택</option></select></label><label>비교 장면<select id="bench-scene"><option value="">장면 선택</option></select></label><label>모델<select id="bench-model"><option value="">모든 모델</option></select></label><button id="compare-scene" class="primary" disabled>이 장면 모델 비교</button><button id="blind-scene" class="quiet" disabled>블라인드 비교</button></div>
-<p id="bench-status" class="bench-status" role="status"></p><p id="bench-environment" class="bench-environment"></p><details class="bench-prompt"><summary>선택 장면의 공개 프롬프트</summary><div id="bench-prompts"></div></details>
-<details class="bench-method"><summary>방법과 한계</summary><div id="bench-method-content"></div><p>같은 프롬프트와 시드도 모델별 토크나이저·기본 설정·정밀도·해상도 차이를 없애지 않으므로 통제 실험이나 성능 순위가 아닙니다. 공개 표본과 미리보기만으로 모델 전체를 일반화하지 마세요. SFW 공개 이미지는 이미지별 허용·시각 검토를 거친 자료입니다.</p></details>
+<p id="bench-status" class="bench-status" role="status"></p><p id="bench-environment" class="bench-environment"></p><details class="bench-prompt"><summary>선택 장면의 프롬프트</summary><div id="bench-prompts"></div></details>
+<details class="bench-method"><summary>방법과 한계</summary><div id="bench-method-content"></div><p>같은 프롬프트와 시드도 모델별 토크나이저·기본 설정·정밀도·해상도 차이를 없애지 않으므로 통제 실험이나 성능 순위가 아닙니다. 이 표본과 미리보기만으로 모델 전체를 일반화하지 마세요.</p></details>
+</section>
+<section id="prompt-view-panel" class="prompt-view-panel" hidden aria-label="동일 프롬프트 카탈로그 비교">
+<div class="prompt-controls"><label>실제 프롬프트<select id="prompt-choice"></select></label><label>시드<select id="prompt-seed"></select></label><label>비교 범위<select id="prompt-scope"><option value="all">전체 카탈로그 + 튜닝</option><option value="catalog">카탈로그 기본/변형</option><option value="tuning">튜닝 전후</option></select></label></div>
+<p id="prompt-summary" class="prompt-summary" role="status"></p><div id="prompt-results" class="prompt-results"></div>
 </section>
 <section class="tools" aria-label="이미지 검색과 필터">
 <label class="search"><span aria-hidden="true">⌕</span><input type="search" id="q" aria-label="이미지 검색" placeholder="제목, 모델, 프롬프트, 태그 검색" autocomplete="off"><kbd>/</kbd></label>
@@ -27,7 +31,7 @@
 <label data-facet="scene">장면<select id="scene"><option value="">모든 장면</option></select></label>
 <label data-facet="occupation">직업<select id="occupation"><option value="">모든 직업</option></select></label>
 <label data-facet="category">카테고리<select id="category"><option value="">모든 카테고리</option></select></label>
-<label data-facet="level">수위<select id="level"><option value="">모든 수위</option></select></label>
+<label data-facet="level">이미지 유형<select id="level"><option value="">모든 유형</option></select></label>
 <label data-facet="rating">평가<select id="rating"><option value="">모든 평가</option></select></label>
 <label data-facet="available">파일<select id="available"><option value="available">사용 가능</option><option value="all">전체 기록</option></select></label>
 </div>
@@ -47,6 +51,6 @@
 <div class="dialog-bar"><strong>나란히 비교</strong><div class="zoom-controls"><button id="compare-minus" aria-label="비교 이미지 축소">−</button><output id="compare-zoom">100%</output><button id="compare-plus" aria-label="비교 이미지 확대">+</button><button id="zoom-reset">화면 맞춤</button><label class="sync-control"><input id="sync-pan" type="checkbox" checked>확대·이동 동기화</label><button id="reshuffle">다시 섞기</button><button id="reveal">이름 표시</button></div><button class="close" aria-label="비교 닫기">×</button></div>
 <p class="compare-hint">이미지를 선택한 뒤 확대하세요. 확대 후 드래그하거나 스크롤해 이동할 수 있습니다.</p><div id="compare-grid" class="compare-grid"></div><details id="condition-comparison" class="condition-comparison" hidden><summary>조건 비교 펼치기</summary><p>확인된 값의 차이를 표시합니다. 조건의 일치나 공정한 비교를 보증하지 않습니다.</p><div class="condition-scroll"><table id="condition-table"></table></div></details>
 </dialog>
-<footer><span>IMAGE ATLAS</span><span>로컬 생성부터 외부 수집까지, 한눈에.</span><span>← → 이미지 이동 · Esc 닫기 · / 검색</span></footer>
+<footer><span>IMAGE ATLAS</span><span>이미지를 탐색하고 생성 조건과 결과를 비교하세요.</span><span>← → 이미지 이동 · Esc 닫기 · / 검색</span></footer>
 <script src="assets/app.js" defer></script>
 </body></html>
