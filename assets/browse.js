@@ -107,6 +107,15 @@
     if (values.size) next.set(axis, values); else next.delete(axis);
     return next;
   }
+  function setTreeVisibility(tree, toggle, panel, layout, visible) {
+    const expanded = Boolean(visible);
+    tree.hidden = !expanded;
+    toggle.setAttribute('aria-expanded', String(expanded));
+    toggle.textContent = expanded ? '탐색기 숨기기' : '탐색기 표시';
+    panel.classList.toggle('tree-collapsed', !expanded);
+    layout?.classList.toggle('tree-collapsed', !expanded);
+    return expanded;
+  }
   function writeSelectionParams(params, selections) {
     for (const axis of AXES) {
       params.delete(axis);
@@ -123,5 +132,5 @@
     }
     return selections;
   }
-  return { AXES, applyFacets, buildTree, countNodes, normalizePhrase, interpretQuery, contentMatches, toggleExpanded, toggleSelection, writeSelectionParams, readSelectionParams };
+  return { AXES, applyFacets, buildTree, countNodes, normalizePhrase, interpretQuery, contentMatches, toggleExpanded, toggleSelection, setTreeVisibility, writeSelectionParams, readSelectionParams };
 });
